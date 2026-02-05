@@ -2,8 +2,8 @@ import { useState } from "react";
 import useAuthUser from "../hooks/useAuthUser";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { completeOnboarding } from "../lib/api";
-import { LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
+import { completeOnboarding, generateAvatarWithGemini } from "../lib/api";
+import { LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon, SparklesIcon } from "lucide-react";
 import { LANGUAGES } from "../constants";
 
 const OnboardingPage = () => {
@@ -18,6 +18,8 @@ const OnboardingPage = () => {
     location: authUser?.location || "",
     profilePic: authUser?.profilePic || "",
   });
+
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
 
   const { mutate: onboardingMutation, isPending } = useMutation({
     mutationFn: completeOnboarding,
@@ -45,6 +47,25 @@ const OnboardingPage = () => {
     toast.success("Random profile picture generated!");
   };
 
+  const handleGeminiAvatar = async () => {
+    if (!formState.fullName.trim()) {
+      toast.error("Please enter your full name first");
+      return;
+    }
+
+    try {
+      setIsGeneratingAvatar(true);
+      const data = await generateAvatarWithGemini(formState.fullName);
+      setFormState({ ...formState, profilePic: data.avatarUrl });
+      toast.success("AI-generated avatar created!");
+    } catch (error) {
+      const message = error?.response?.data?.message || "Failed to generate avatar";
+      toast.error(message);
+    } finally {
+      setIsGeneratingAvatar(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
       <div className="card bg-base-200 w-full max-w-3xl shadow-xl">
@@ -70,10 +91,28 @@ const OnboardingPage = () => {
               </div>
 
               {/* Generate Random Avatar BTN */}
-              <div className="flex items-center gap-2">
-                <button type="button" onClick={handleRandomAvatar} className="btn btn-accent">
-                  <ShuffleIcon className="size-4 mr-2" />
-                  Generate Random Avatar
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <button type="button" onClick={handleRandomAvatar} className="btn btn-accent btn-sm">
+                  <ShuffleIcon className="size-4" />
+                  Random
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGeminiAvatar}
+                  disabled={isGeneratingAvatar}
+                  className="btn btn-primary btn-sm"
+                >
+                  {isGeneratingAvatar ? (
+                    <>
+                      <LoaderIcon className="animate-spin size-4" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <SparklesIcon className="size-4" />
+                      AI Avatar
+                    </>
+                  )}
                 </button>
               </div>
             </div>

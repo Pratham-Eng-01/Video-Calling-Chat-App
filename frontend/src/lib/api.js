@@ -63,3 +63,13 @@ export async function getStreamToken() {
   const response = await axiosInstance.get("/chat/token");
   return response.data;
 }
+
+export async function getSmartReply(message) {
+  const response = await axiosInstance.post("/ai/smart-reply", { message });
+  return response.data;
+}
+
+export async function generateAvatarWithGemini(fullName) {
+  const response = await axiosInstance.post("/ai/generate-avatar", { fullName });
+  return response.data;
+}

@@ -9,11 +9,13 @@ Streamify is a full-stack video calling and chat app with authentication, friend
 - 1:1 chat and video call pages
 - Theming with Tailwind + DaisyUI
 - REST API with protected routes
+- AI integration (optional)
 
 ## Tech Stack
 
 - Frontend: React, Vite, Tailwind CSS, DaisyUI, React Router, TanStack Query
 - Backend: Node.js, Express, MongoDB (Mongoose)
+- AI: optional provider of your choice
 
 ## Project Structure
 
@@ -134,3 +136,12 @@ Frontend
 
 - Ensure MongoDB is running before starting the backend.
 - The /friends page shows the authenticated user’s friends list.
+
+## AI (Optional)
+
+This project does not include AI features by default. If you add an AI service, keep any API keys in backend/.env, for example:
+
+```
+AI_PROVIDER=your_provider_name
+AI_API_KEY=your_api_key
+```
